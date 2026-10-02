@@ -1,0 +1,28 @@
+# Pacote APM deste harness de descoberta.
+# name e version são obrigatórios (semver).
+name: python-api-validation-discovery
+version: 0.1.0
+description: >
+  Descoberta de validação de API em Python numa plataforma de dados na AWS,
+  com checks de qualidade/segurança, loop de entrega do agente e Schemathesis
+  no contrato OpenAPI.
+author: Emerson Delatorre
+license: MIT
+type: hybrid
+includes: auto
+
+# windsurf é o alvo oficial do APM para o Devin Desktop e é o alvo primário
+# deste pacote. O APM não tem outro slug para esse produto; um valor
+# desconhecido é erro de parse.
+targets:
+  - windsurf
+  - claude
+  - cursor
+  - copilot
+
+# scripts: é o mapa oficial de comandos nomeados (apm run <nome>).
+# Não existe seção tools no apm.yml; Schemathesis entra aqui e nas primitives.
+scripts:
+  start: python3 scripts/agent_loop.py --demo
+  loop: python3 scripts/agent_loop.py --config loop.yaml
+  schemathesis: python3 -m schemathesis run {spec}

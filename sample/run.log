@@ -1,0 +1,34 @@
+# Corrida ponta a ponta do harness em sample/
+# Comando:
+# python3 scripts/agent_loop.py --config sample/loop.yaml --changed-files sample/domain.py sample/limits.py --agent "python3 sample/mock_agent.py"
+#
+# Baseline antes do loop:
+# ruff check sample/domain.py sample/limits.py -> All checks passed
+# mypy --pretty --ignore-missing-imports sample/domain.py sample/limits.py -> Success: no issues found
+# pytest sample/test_domain.py sample/test_limits.py -> 3 failed (regra de domínio e limite)
+#
+===== LOOP =====
+Iteração 0.
+Corrija a propriedade quebrada. Não explique o próprio erro.
+Não desligue o check com noqa, type: ignore ou baseline.
+
+check: pytest-domain
+propriedade_quebrada: amount > 10000 implica PENDENTE_APROVACAO e saldo intacto
+contraexemplo_minimo: 10000.01
+
+Chamando o agente (volta 1/3)...
+mock_agent: leu o feedback e reescreveu /workspace/sample/domain.py
+Iteração 1.
+Corrija a propriedade quebrada. Não explique o próprio erro.
+Não desligue o check com noqa, type: ignore ou baseline.
+
+check: pytest-domain
+propriedade_quebrada: value > 10 deve ser recusado
+contraexemplo_minimo: 10.01
+
+Chamando o agente (volta 2/3)...
+mock_agent: leu o feedback e reescreveu /workspace/sample/limits.py
+Loop encerrado: o que falhava passou e o que já passava continua passando.
+Volta em que passou: 2.
+Checks rodados: ruff, mypy, pytest-domain.
+exit=0

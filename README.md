@@ -25,3 +25,7 @@ No CI da AWS, as duas camadas rodam no mesmo pipeline (CodeBuild ou GitHub Actio
 - [CI na AWS](docs/aws-ci.md)
 - [Qualidade e segurança no harness](docs/qualidade-seguranca.md)
 - [Loop de entrega do agente](docs/agent-delivery-loop.md)
+- [Amostra do loop](docs/agent-loop-sample.md)
+- [Pacote APM](docs/apm-setup.md)
+- [Papers que informam o harness](docs/papers-research.md)
+- [Checklist de produção](docs/production-checklist.md)
