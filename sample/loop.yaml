@@ -1,0 +1,24 @@
+# Checks da amostra do harness. Ruff e mypy no Python; pytest na regra nomeada.
+max_iterations: 3
+
+tools:
+  - name: ruff
+    argv: [ruff, check]
+    apply: python
+    patterns:
+      - "**/*.py"
+    pass_files: true
+
+  - name: mypy
+    argv: [mypy, --pretty, --ignore-missing-imports]
+    apply: python
+    patterns:
+      - "**/*.py"
+    pass_files: true
+
+  - name: pytest-domain
+    argv: [pytest, sample/test_domain.py, sample/test_limits.py, -q, --tb=line]
+    apply: python
+    patterns:
+      - "**/*.py"
+    pass_files: false

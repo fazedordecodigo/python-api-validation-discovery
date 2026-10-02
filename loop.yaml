@@ -1,0 +1,73 @@
+# Mapa de checks alinhado a docs/agent-delivery-loop.md.
+# A decisão olha o diff, não o título da tarefa.
+max_iterations: 3
+
+tools:
+  # Lint e tipos sempre que a mudança tem Python, só nos arquivos tocados.
+  - name: ruff
+    argv: [ruff, check]
+    apply: python
+    patterns:
+      - "**/*.py"
+    pass_files: true
+
+  - name: mypy
+    argv: [mypy, --pretty, --show-error-codes, --ignore-missing-imports]
+    apply: python
+    patterns:
+      - "**/*.py"
+    pass_files: true
+
+  # SAST no diff de código Python.
+  - name: bandit
+    argv: [bandit, -q, -r]
+    apply: python_code
+    patterns:
+      - "**/*.py"
+    pass_files: true
+
+  # Segredo em qualquer mudança: um .env pode aparecer em qualquer tarefa.
+  - name: gitleaks
+    argv: [gitleaks, detect, --no-git, --redact, --no-banner, --source, .]
+    apply: always
+    pass_files: false
+
+  # Advisory de dependência só quando o arquivo de dependência muda.
+  - name: pip-audit
+    argv: [pip-audit]
+    apply: dependencies
+    patterns:
+      - "requirements*.txt"
+      - "**/requirements*.txt"
+      - "pyproject.toml"
+      - "**/pyproject.toml"
+      - "Pipfile.lock"
+      - "**/Pipfile.lock"
+      - "poetry.lock"
+      - "**/poetry.lock"
+      - "uv.lock"
+      - "**/uv.lock"
+      - "pdm.lock"
+      - "**/pdm.lock"
+    pass_files: false
+
+  # Imagem e IaC: Dockerfile, artefato de imagem, Terraform ou CloudFormation.
+  - name: trivy
+    argv: [trivy, fs, --offline-scan, --skip-db-update]
+    apply: docker_or_iac
+    patterns:
+      - "**/Dockerfile"
+      - "**/Dockerfile.*"
+      - "**/*.dockerfile"
+      - "**/*.tar"
+      - "**/*.tar.gz"
+      - "**/*.tf"
+      - "**/*.tfvars"
+      - "**/*.cfn.yaml"
+      - "**/*.cfn.yml"
+      - "**/*.cfn.json"
+      - "**/*cloudformation*"
+      - "**/cloudformation/**"
+      - "**/template.yaml"
+      - "**/template.yml"
+    pass_files: true
