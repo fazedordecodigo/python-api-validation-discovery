@@ -15,7 +15,7 @@ Schemathesis não entra no wrapper. Contrato HTTP continua no pipeline. Veja [Sc
 
 `sample/domain.py` tem um defeito que Ruff e mypy não veem: `approve_transfer` deveria deixar pendente um valor acima de 10000 e não debitar o saldo de origem, mas aprova e debita. É o mesmo exemplo de [regras de negócio](regras-de-negocio.md), em Python puro. `sample/limits.py` tem uma regra menor (recusar valor acima de 10), também errada de propósito.
 
-O pytest em `sample/test_domain.py` fixa a regra: 10000.01 e o vizinho 10000.02 devem voltar `PENDENTE_APROVACAO` com saldo intacto.
+O pytest em `sample/test_domain.py` fixa os dois lados do limiar: 10000.01 e o vizinho 10000.02 devem voltar `PENDENTE_APROVACAO` com saldo intacto; 9999.99 e 10000.0 devem ser aprovados e debitados. Sem o lado de baixo, `amount < 10000` e o bug intencional (sempre aprova acima do limiar) não se distinguem.
 
 ## Como rodar a amostra
 
@@ -30,7 +30,7 @@ python3 scripts/agent_loop.py \
 
 `sample/mock_agent.py` lê `propriedade_quebrada` e `contraexemplo_minimo` e só então reescreve o arquivo. Não é um agente de código real.
 
-O log de uma corrida executada neste repositório está em `sample/run.log`. A evidência dos testes do harness (16 unittest OK; mutantes mortos=2, sobreviveram=1, score=0.67) está em `docs/test-run.md`.
+O log de uma corrida executada neste repositório está em `sample/run.log`. A evidência dos testes do harness está em `docs/test-run.md`.
 
 `--demo` ainda existe e usa `scripts/demo_agent.py` num fixture temporário, sem chamar um agente real.
 
@@ -45,5 +45,5 @@ A saída dos checks (já no formato mínimo) vai para stdin do comando, para `AG
 ## Testes do wrapper
 
 ```bash
-python3 -m unittest tests.test_agent_loop tests.test_agent_loop_integration
+python3 -m unittest tests.test_agent_loop tests.test_agent_loop_integration tests.test_sample_domain_oracle
 ```
