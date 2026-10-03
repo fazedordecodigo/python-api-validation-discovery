@@ -1,0 +1,12 @@
+---
+description: SAST, advisory de dependência e scan de imagem/IaC nos arquivos que pedem esses checks.
+applyTo: "**/*.py,**/Dockerfile,**/Dockerfile.*,**/*.dockerfile,**/*.tf,**/*.tfvars,**/*.cfn.yaml,**/*.cfn.yml,**/*.cfn.json,**/template.yaml,**/template.yml,requirements*.txt,**/requirements*.txt,pyproject.toml,**/pyproject.toml,Pipfile.lock,**/Pipfile.lock,poetry.lock,**/poetry.lock,uv.lock,**/uv.lock,pdm.lock,**/pdm.lock"
+---
+
+- Código Python no diff pede Bandit com os mesmos argv de `loop.yaml`: `bandit -q -r` nos arquivos tocados.
+- Arquivo de dependência (`requirements*.txt`, `pyproject.toml` ou lockfile) pede `pip-audit`.
+- Dockerfile, artefato de imagem, Terraform ou CloudFormation pedem `trivy fs --offline-scan --skip-db-update`.
+- Fonte da verdade: `docs/qualidade-seguranca.md` e `loop.yaml`. Não recrie a página aqui.
+- Ferramenta ausente é falha. Não trate ausência como sucesso.
+- Não desligue o check com baseline, a menos que a tarefa peça isso.
+- Auditoria nomeada: `apm run audit` ou `sh scripts/audit.sh`. O wrapper `python3 scripts/agent_loop.py` escolhe pelo diff.

@@ -1,6 +1,6 @@
 ---
-description: Uma tarefa de código só fecha quando os checks aplicáveis passam.
-applyTo: "**/*"
+trigger: glob
+globs: "**/*"
 ---
 
 - Uma tarefa de código não está pronta enquanto os checks aplicáveis ao diff não passarem e os que já passavam continuarem passando.

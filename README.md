@@ -1,31 +1,45 @@
-# Descoberta: validação de API em Python na AWS
+# Pacote APM: qualidade e segurança
 
-Este repositório documenta uma descoberta para escolher a melhor forma de validar APIs num cenário de desenvolvimento **Python** numa **plataforma de dados na AWS**.
+Este repositório é um pacote do [Agent Package Manager](https://microsoft.github.io/apm/) com as validações de qualidade e segurança já documentadas aqui (Ruff, mypy, Bandit, gitleaks, pip-audit, Trivy), o loop de entrega do agente e o Schemathesis no contrato OpenAPI.
 
-O objetivo não é adotar uma ferramenta agora. É separar duas perguntas que se misturam com facilidade:
+Alvos do manifesto: `windsurf` (Devin Desktop) e `claude`. O APM não tem slug `devin`.
 
-1. O contrato OpenAPI está implementado?
-2. A regra de negócio nomeada está implementada?
+## Instalar o CLI
 
-## Recomendação em duas camadas
+```bash
+curl -sSL https://aka.ms/apm-unix | sh
+```
 
-- **Contrato:** [Schemathesis](https://github.com/schemathesis/schemathesis) gera casos a partir do OpenAPI (property-based / fuzzing) e acha quebra de contrato.
-- **Regra de negócio:** [pytest-bdd](https://pytest-bdd.readthedocs.io/) (ou Behave) guarda a regra em Gherkin, legível para quem define o domínio, e o step chama a API de verdade.
+## Instalar este pacote noutro repositório
 
-Alternativa mais simples só para o contrato, quando o fuzzing ainda não compensa: [Dredd](https://github.com/apiaryio/dredd).
+```bash
+apm install fazedordecodigo/python-api-validation-discovery
+```
 
-No CI da AWS, as duas camadas rodam no mesmo pipeline (CodeBuild ou GitHub Actions) contra a API publicada no API Gateway.
+Com caminho local (útil num piloto):
 
-## Mapa
+```bash
+apm install /caminho/para/python-api-validation-discovery
+```
 
-- [Schemathesis](docs/schemathesis.md)
-- [Dredd](docs/dredd.md)
-- [Regras de negócio em Gherkin](docs/regras-de-negocio.md)
-- [Comparação de ferramentas](docs/comparacao.md)
-- [CI na AWS](docs/aws-ci.md)
-- [Qualidade e segurança no harness](docs/qualidade-seguranca.md)
+Isso resolve o pacote, gera `apm.lock.yaml` e projeta as primitives de `.apm/` nos diretórios do harness. Edite só a fonte em `.apm/`.
+
+Neste repositório, depois do CLI no `PATH`:
+
+```bash
+apm install
+apm compile
+apm run lint
+apm run test
+apm run audit
+apm run loop
+```
+
+## Mapa da descoberta
+
+- [Pacote APM](docs/apm-setup.md)
+- [Qualidade e segurança](docs/qualidade-seguranca.md)
 - [Loop de entrega do agente](docs/agent-delivery-loop.md)
 - [Amostra do loop](docs/agent-loop-sample.md)
-- [Pacote APM](docs/apm-setup.md)
-- [Papers que informam o harness](docs/papers-research.md)
+- [Schemathesis](docs/schemathesis.md)
 - [Checklist de produção](docs/production-checklist.md)

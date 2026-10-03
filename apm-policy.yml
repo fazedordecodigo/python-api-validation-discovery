@@ -1,0 +1,24 @@
+# Política deste pacote. A descoberta automática do APM procura
+# apm-policy.yml no repositório de org (.github-private / .github).
+# Neste repositório o arquivo vive na raiz e o audit usa
+# `apm audit --ci --policy ./apm-policy.yml`.
+name: python-api-validation-discovery
+version: "0.1.0"
+enforcement: warn
+fetch_failure: warn
+
+compilation:
+  target:
+    allow:
+      - windsurf
+      - claude
+
+manifest:
+  required_fields:
+    - description
+    - license
+  scripts: allow
+
+mcp:
+  self_defined: warn
+  trust_transitive: false

@@ -1,0 +1,199 @@
+lockfile_version: '1'
+dependencies: []
+deployments:
+- kind: project-relative
+  target: claude
+  value: .claude/commands/run-agent-loop.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:535b9ee2f471da5b5157c21bc5c87b52e1c02b478b185e3734f3fdab61da539a
+- kind: project-relative
+  target: claude
+  value: .claude/rules/checks-must-pass.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:8af6841678c77af06ffb751b931167e741ceabb721d173dc9f532e3bdb14bcb4
+- kind: project-relative
+  target: claude
+  value: .claude/rules/schemathesis-openapi.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:2093e0ba2a317093006f4c3aa9dd56da3b2f78ece9e56372902fc43160dea663
+- kind: project-relative
+  target: claude
+  value: .claude/rules/secrets.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:d27e4cb81cc60d56a5c07632b2490ecf339e56f1611d0e276ab03aad9104d22a
+- kind: project-relative
+  target: claude
+  value: .claude/rules/security.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:a4d058f30435fe196ce12d764d5ef7ab36af6876475b25b763f6711bd7fe6325
+- kind: project-relative
+  target: claude
+  value: .claude/skills/quality-security-loop
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/quality-security-loop/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:5301e42801dc593d16696d68cc56425fbcf3f2b6c1ae6897dd64543d39164c27
+- kind: project-relative
+  target: claude
+  value: .claude/skills/schemathesis-api
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/schemathesis-api/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:6c9b26614b92ad14bf903e94aa5d15c7ff10a956a5f8f0d03095e098d5c15333
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/quality-security-loop
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/quality-security-loop/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:5301e42801dc593d16696d68cc56425fbcf3f2b6c1ae6897dd64543d39164c27
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/schemathesis-api
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: null
+- kind: project-relative
+  target: legacy
+  value: .agents/skills/schemathesis-api/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:6c9b26614b92ad14bf903e94aa5d15c7ff10a956a5f8f0d03095e098d5c15333
+- kind: project-relative
+  target: windsurf
+  value: .windsurf/rules/checks-must-pass.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:becc2cd56b576a1ad8410132f3574a147c150894d24f621c4ac49f578b2243c2
+- kind: project-relative
+  target: windsurf
+  value: .windsurf/rules/schemathesis-openapi.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:35736832505ae1a53db5d149a1017589ea975d73a6e8225130f64c03e5c0efaa
+- kind: project-relative
+  target: windsurf
+  value: .windsurf/rules/secrets.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:56ae0f25cd8c06a17ac0b1ebdba9d76b23e311b4abb4f86099339cb926b7dea9
+- kind: project-relative
+  target: windsurf
+  value: .windsurf/rules/security.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:68861d6b0ce6c6ebb228b608e6037ce9c3b6e4aeb14147a392376c9e9e687e50
+- kind: project-relative
+  target: windsurf
+  value: .windsurf/workflows/run-agent-loop.md
+  runtime: null
+  scope: project
+  owners:
+  - .
+  active_owner: .
+  content_hash: sha256:535b9ee2f471da5b5157c21bc5c87b52e1c02b478b185e3734f3fdab61da539a
+local_deployed_files:
+- .agents/skills/quality-security-loop
+- .agents/skills/quality-security-loop/SKILL.md
+- .agents/skills/schemathesis-api
+- .agents/skills/schemathesis-api/SKILL.md
+- .claude/commands/run-agent-loop.md
+- .claude/rules/checks-must-pass.md
+- .claude/rules/schemathesis-openapi.md
+- .claude/rules/secrets.md
+- .claude/rules/security.md
+- .claude/skills/quality-security-loop
+- .claude/skills/quality-security-loop/SKILL.md
+- .claude/skills/schemathesis-api
+- .claude/skills/schemathesis-api/SKILL.md
+- .windsurf/rules/checks-must-pass.md
+- .windsurf/rules/schemathesis-openapi.md
+- .windsurf/rules/secrets.md
+- .windsurf/rules/security.md
+- .windsurf/workflows/run-agent-loop.md
+local_deployed_file_hashes:
+  .agents/skills/quality-security-loop/SKILL.md: sha256:5301e42801dc593d16696d68cc56425fbcf3f2b6c1ae6897dd64543d39164c27
+  .agents/skills/schemathesis-api/SKILL.md: sha256:6c9b26614b92ad14bf903e94aa5d15c7ff10a956a5f8f0d03095e098d5c15333
+  .claude/commands/run-agent-loop.md: sha256:535b9ee2f471da5b5157c21bc5c87b52e1c02b478b185e3734f3fdab61da539a
+  .claude/rules/checks-must-pass.md: sha256:8af6841678c77af06ffb751b931167e741ceabb721d173dc9f532e3bdb14bcb4
+  .claude/rules/schemathesis-openapi.md: sha256:2093e0ba2a317093006f4c3aa9dd56da3b2f78ece9e56372902fc43160dea663
+  .claude/rules/secrets.md: sha256:d27e4cb81cc60d56a5c07632b2490ecf339e56f1611d0e276ab03aad9104d22a
+  .claude/rules/security.md: sha256:a4d058f30435fe196ce12d764d5ef7ab36af6876475b25b763f6711bd7fe6325
+  .claude/skills/quality-security-loop/SKILL.md: sha256:5301e42801dc593d16696d68cc56425fbcf3f2b6c1ae6897dd64543d39164c27
+  .claude/skills/schemathesis-api/SKILL.md: sha256:6c9b26614b92ad14bf903e94aa5d15c7ff10a956a5f8f0d03095e098d5c15333
+  .windsurf/rules/checks-must-pass.md: sha256:becc2cd56b576a1ad8410132f3574a147c150894d24f621c4ac49f578b2243c2
+  .windsurf/rules/schemathesis-openapi.md: sha256:35736832505ae1a53db5d149a1017589ea975d73a6e8225130f64c03e5c0efaa
+  .windsurf/rules/secrets.md: sha256:56ae0f25cd8c06a17ac0b1ebdba9d76b23e311b4abb4f86099339cb926b7dea9
+  .windsurf/rules/security.md: sha256:68861d6b0ce6c6ebb228b608e6037ce9c3b6e4aeb14147a392376c9e9e687e50
+  .windsurf/workflows/run-agent-loop.md: sha256:535b9ee2f471da5b5157c21bc5c87b52e1c02b478b185e3734f3fdab61da539a
