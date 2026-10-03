@@ -105,7 +105,7 @@ apm audit --ci --policy ./apm-policy.yml
 
 `apm.lock.yaml` só deve existir se o CLI gerou. Não escreva esse arquivo à mão.
 
-Se `apm` não estiver instalado, ou se `apm install` não rodar limpo, não invente o lockfile. Instale o CLI e rode `apm install` neste repositório. O arquivo gerado pode ser commitado.
+Nesta cópia o arquivo foi gerado por `apm install` com o CLI APM 0.33.0. `apm_modules/` continua no `.gitignore`.
 
 ## Fora do APM
 
