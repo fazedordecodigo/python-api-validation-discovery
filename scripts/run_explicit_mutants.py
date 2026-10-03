@@ -21,6 +21,7 @@ SUITE = [
     "unittest",
     "tests.test_agent_loop",
     "tests.test_agent_loop_integration",
+    "tests.test_sample_domain_oracle",
     "-q",
 ]
 
