@@ -28,7 +28,7 @@ Schemathesis não é um desses checks mecânicos. Se a tarefa muda a API HTTP, u
 ## Como fechar a tarefa
 
 1. Altere só o código da tarefa.
-2. Rode `python3 scripts/agent_loop.py` (ou `apm run loop`, ou o prompt `run-agent-loop`).
+2. Rode `python3 scripts/agent_loop.py` (ou `apm run loop`, ou o prompt `run-agent-loop`). `apm run lint`, `apm run test` e `apm run audit` chamam `scripts/lint.sh`, `scripts/test.sh` e `scripts/audit.sh` com os mesmos argv de `loop.yaml`.
 3. Se um check falhar, o feedback é só `propriedade_quebrada` e `contraexemplo_minimo`. Corrija isso. Não explique o próprio erro.
 4. Se o hash da falha se repetir, descarte o patch e pare aquela linha.
 5. Pare no limite de 3 voltas. Não suba o teto.
