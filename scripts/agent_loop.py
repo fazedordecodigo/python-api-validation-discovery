@@ -356,30 +356,44 @@ def discover_changed_files(root: Path, explicit: Sequence[str] | None, base: str
     git = shutil.which("git")
     if git is None:
         raise LoopError("git não está instalado; passe --changed-files ou use --demo")
-    commands = (
-        [git, "-C", str(root), "diff", "--name-only", "--diff-filter=ACMR", base],
+    try:
+        base_diff = subprocess.run(
+            [git, "-C", str(root), "diff", "--name-only", "--diff-filter=ACMR", base],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError as exc:
+        raise LoopError(f"falha ao consultar o git: {exc}") from exc
+    if base_diff.returncode != 0:
+        detail = (base_diff.stderr or "").strip()
+        message = f"git diff {base} saiu com código {base_diff.returncode}"
+        if detail:
+            message = f"{message}: {detail}"
+        raise LoopError(message)
+    names.update(_git_paths(base_diff.stdout, root))
+    optional = (
         [git, "-C", str(root), "diff", "--name-only", "--cached", "--diff-filter=ACMR"],
         [git, "-C", str(root), "ls-files", "--others", "--exclude-standard"],
     )
-    for index, command in enumerate(commands):
+    for command in optional:
         try:
             completed = subprocess.run(command, check=False, capture_output=True, text=True)
         except OSError as exc:
             raise LoopError(f"falha ao consultar o git: {exc}") from exc
         if completed.returncode != 0:
-            # Diff contra a base que não rodou não é diff vazio.
-            if index == 0:
-                detail = (completed.stderr or "").strip()
-                message = f"git diff {base} saiu com código {completed.returncode}"
-                if detail:
-                    message = f"{message}: {detail}"
-                raise LoopError(message)
             continue
-        for line in completed.stdout.splitlines():
-            stripped = line.strip()
-            if stripped:
-                names.add(normalize_rel(stripped, root))
+        names.update(_git_paths(completed.stdout, root))
     return sorted(names)
+
+
+def _git_paths(stdout: str, root: Path) -> set[str]:
+    names: set[str] = set()
+    for line in stdout.splitlines():
+        stripped = line.strip()
+        if stripped:
+            names.add(normalize_rel(stripped, root))
+    return names
 
 
 def match_patterns(path: str, patterns: Sequence[str]) -> bool:
