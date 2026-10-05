@@ -33,7 +33,16 @@ class LoadConfigTests(unittest.TestCase):
         names = [tool.name for tool in config.tools]
         self.assertEqual(
             names,
-            ["ruff", "mypy", "pytest-domain", "bandit", "gitleaks", "pip-audit", "trivy"],
+            [
+                "ruff",
+                "mypy",
+                "pytest-domain",
+                "bandit",
+                "gitleaks",
+                "pip-audit",
+                "trivy",
+                "schemathesis",
+            ],
         )
 
     def test_sample_loop_yaml_selects_ruff_mypy_pytest(self) -> None:
@@ -71,6 +80,53 @@ class SelectionTests(unittest.TestCase):
             if agent_loop.tool_applies(tool, changed)
         ]
         self.assertEqual(selected, ["gitleaks", "trivy"])
+
+    def test_openapi_change_selects_schemathesis_and_secrets(self) -> None:
+        changed = ["openapi.yaml"]
+        selected = [
+            tool.name
+            for tool in self.config.tools
+            if agent_loop.tool_applies(tool, changed)
+        ]
+        self.assertEqual(selected, ["gitleaks", "schemathesis"])
+
+    def test_schemathesis_runs_one_process_per_spec(self) -> None:
+        tool = next(item for item in self.config.tools if item.name == "schemathesis")
+        recorded: list[list[str]] = []
+
+        def which(name: str) -> str | None:
+            self.assertEqual(name, "python3")
+            return "/usr/bin/python3"
+
+        def run(
+            argv: Sequence[str],
+            _env: Mapping[str, str] | None,
+            _stdin: str | None,
+        ) -> subprocess.CompletedProcess[str]:
+            recorded.append(list(argv))
+            return FakeProcess(0)
+
+        results = agent_loop.run_tool(
+            tool,
+            ["docs/openapi.yaml", "api/swagger.json", "src/service.py"],
+            root=ROOT,
+            which=which,
+            run=run,
+        )
+        self.assertEqual(
+            [result.check for result in results],
+            [
+                "schemathesis[docs/openapi.yaml]",
+                "schemathesis[api/swagger.json]",
+            ],
+        )
+        self.assertEqual(
+            recorded,
+            [
+                ["/usr/bin/python3", "-m", "schemathesis", "run", "docs/openapi.yaml"],
+                ["/usr/bin/python3", "-m", "schemathesis", "run", "api/swagger.json"],
+            ],
+        )
 
 
 class HashAndFeedbackTests(unittest.TestCase):
@@ -255,6 +311,10 @@ class LoopBehaviorTests(unittest.TestCase):
         self.assertTrue(agent_loop.can_close(baseline, passing))
         self.assertFalse(agent_loop.can_close(baseline, regression))
         self.assertFalse(agent_loop.can_close(baseline, still_failing))
+
+    def test_git_diff_missing_base_raises(self) -> None:
+        with self.assertRaises(agent_loop.LoopError):
+            agent_loop.discover_changed_files(ROOT, None, "refs/heads/nao-existe")
 
     def test_rejects_unknown_apply(self) -> None:
         with TemporaryDirectory() as tmp:

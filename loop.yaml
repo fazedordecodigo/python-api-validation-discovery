@@ -78,3 +78,18 @@ tools:
       - "**/template.yaml"
       - "**/template.yml"
     pass_files: true
+
+  - name: schemathesis
+    argv: [python3, -m, schemathesis, run]
+    apply: openapi
+    patterns:
+      - "**/*openapi*.yaml"
+      - "**/*openapi*.yml"
+      - "**/*openapi*.json"
+      - "**/*swagger*.yaml"
+      - "**/*swagger*.yml"
+      - "**/*swagger*.json"
+      - "**/openapi.yaml"
+      - "**/openapi.yml"
+      - "**/openapi.json"
+    pass_files: true

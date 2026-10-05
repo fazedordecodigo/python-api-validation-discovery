@@ -44,6 +44,7 @@ class ApplyKind(Enum):
     ALWAYS = "always"
     DEPENDENCIES = "dependencies"
     DOCKER_OR_IAC = "docker_or_iac"
+    OPENAPI = "openapi"
 
 
 @dataclass(frozen=True)
@@ -360,12 +361,19 @@ def discover_changed_files(root: Path, explicit: Sequence[str] | None, base: str
         [git, "-C", str(root), "diff", "--name-only", "--cached", "--diff-filter=ACMR"],
         [git, "-C", str(root), "ls-files", "--others", "--exclude-standard"],
     )
-    for command in commands:
+    for index, command in enumerate(commands):
         try:
             completed = subprocess.run(command, check=False, capture_output=True, text=True)
         except OSError as exc:
             raise LoopError(f"falha ao consultar o git: {exc}") from exc
         if completed.returncode != 0:
+            # Diff contra a base que não rodou não é diff vazio.
+            if index == 0:
+                detail = (completed.stderr or "").strip()
+                message = f"git diff {base} saiu com código {completed.returncode}"
+                if detail:
+                    message = f"{message}: {detail}"
+                raise LoopError(message)
             continue
         for line in completed.stdout.splitlines():
             stripped = line.strip()
@@ -403,8 +411,28 @@ def tool_applies(tool: ToolSpec, changed: Sequence[str]) -> bool:
         if any(_is_python_path(path) for path in changed):
             return True
         return bool(matching_files(tool, changed))
-    if kind is ApplyKind.DEPENDENCIES or kind is ApplyKind.DOCKER_OR_IAC:
+    if (
+        kind is ApplyKind.DEPENDENCIES
+        or kind is ApplyKind.DOCKER_OR_IAC
+        or kind is ApplyKind.OPENAPI
+    ):
         return bool(matching_files(tool, changed))
+    unreachable: Never = kind
+    raise LoopError(f"apply não tratado: {unreachable}")
+
+
+def _one_process_per_file(kind: ApplyKind) -> bool:
+    match kind:
+        case ApplyKind.OPENAPI:
+            return True
+        case (
+            ApplyKind.PYTHON
+            | ApplyKind.PYTHON_CODE
+            | ApplyKind.ALWAYS
+            | ApplyKind.DEPENDENCIES
+            | ApplyKind.DOCKER_OR_IAC
+        ):
+            return False
     unreachable: Never = kind
     raise LoopError(f"apply não tratado: {unreachable}")
 
@@ -525,50 +553,26 @@ def expand_argv(argv: Sequence[str], files: Sequence[str]) -> list[str]:
     return expanded
 
 
-def run_tool(
+def _execute_check(
     tool: ToolSpec,
-    changed: Sequence[str],
+    check: str,
+    argv: Sequence[str],
     *,
     root: Path,
-    which: WhichFn,
     run: RunFn,
 ) -> CheckResult:
-    if not tool_applies(tool, changed):
-        return CheckResult(tool=tool.name, check=tool.name, ok=True, output="", skipped=True)
-    files = matching_files(tool, changed)
-    resolved = which(tool.argv[0])
-    if resolved is None:
-        message = (
-            f"{tool.name}: ferramenta não instalada ({tool.argv[0]}). "
-            "O loop não trata ausência como sucesso. Instale o binário e rode de novo."
-        )
-        return CheckResult(
-            tool=tool.name,
-            check=tool.name,
-            ok=False,
-            output=message,
-            missing=True,
-            property_broken=f"{tool.name} precisa estar instalado",
-            counterexample=tool.argv[0],
-            error_hash=hash_failure(tool.name, message, tool.name),
-        )
-    argv = [resolved, *tool.argv[1:]]
-    if tool.pass_files:
-        if not files:
-            return CheckResult(tool=tool.name, check=tool.name, ok=True, output="", skipped=True)
-        argv = expand_argv(argv, files)
     try:
         completed = run(argv, {"PWD": str(root)}, None)
     except OSError as exc:
         message = f"{tool.name}: falha ao executar {argv[0]}: {exc}"
         return CheckResult(
             tool=tool.name,
-            check=tool.name,
+            check=check,
             ok=False,
             output=message,
             property_broken=f"{tool.name} deve executar",
             counterexample=str(exc),
-            error_hash=hash_failure(tool.name, message, tool.name),
+            error_hash=hash_failure(tool.name, message, check),
         )
     output = (completed.stdout or "") + (completed.stderr or "")
     ok = completed.returncode == 0
@@ -577,16 +581,68 @@ def run_tool(
     digest = ""
     if not ok:
         property_broken, counterexample = extract_failure(tool.name, output)
-        digest = hash_failure(tool.name, f"{property_broken}|{counterexample}", tool.name)
+        digest = hash_failure(tool.name, f"{property_broken}|{counterexample}", check)
     return CheckResult(
         tool=tool.name,
-        check=tool.name,
+        check=check,
         ok=ok,
         output=output.strip(),
         property_broken=property_broken,
         counterexample=counterexample,
         error_hash=digest,
     )
+
+
+def run_tool(
+    tool: ToolSpec,
+    changed: Sequence[str],
+    *,
+    root: Path,
+    which: WhichFn,
+    run: RunFn,
+) -> list[CheckResult]:
+    if not tool_applies(tool, changed):
+        return [
+            CheckResult(tool=tool.name, check=tool.name, ok=True, output="", skipped=True)
+        ]
+    files = matching_files(tool, changed)
+    resolved = which(tool.argv[0])
+    if resolved is None:
+        message = (
+            f"{tool.name}: ferramenta não instalada ({tool.argv[0]}). "
+            "O loop não trata ausência como sucesso. Instale o binário e rode de novo."
+        )
+        return [
+            CheckResult(
+                tool=tool.name,
+                check=tool.name,
+                ok=False,
+                output=message,
+                missing=True,
+                property_broken=f"{tool.name} precisa estar instalado",
+                counterexample=tool.argv[0],
+                error_hash=hash_failure(tool.name, message, tool.name),
+            )
+        ]
+    argv = [resolved, *tool.argv[1:]]
+    if not tool.pass_files:
+        return [_execute_check(tool, tool.name, argv, root=root, run=run)]
+    if not files:
+        return [
+            CheckResult(tool=tool.name, check=tool.name, ok=True, output="", skipped=True)
+        ]
+    if _one_process_per_file(tool.apply):
+        return [
+            _execute_check(
+                tool,
+                f"{tool.name}[{path}]",
+                expand_argv(argv, [path]),
+                root=root,
+                run=run,
+            )
+            for path in files
+        ]
+    return [_execute_check(tool, tool.name, expand_argv(argv, files), root=root, run=run)]
 
 
 def snapshot_paths(root: Path, changed: Sequence[str]) -> dict[str, str]:
@@ -718,8 +774,9 @@ def run_loop(
     last_results: list[CheckResult] = []
     while True:
         last_results = [
-            run_tool(tool, changed, root=root, which=which, run=run)
+            result
             for tool in config.tools
+            for result in run_tool(tool, changed, root=root, which=which, run=run)
         ]
         if not state.baseline_pass:
             state.baseline_pass = record_baseline(last_results)
