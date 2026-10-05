@@ -93,7 +93,7 @@ def main() -> int:
     score = (killed / total) if total else 0.0
     print(f"mortos={killed} sobreviveram={survived} nao_aplicados={skipped}")
     print(f"score={score:.2f} (mortos/aplicados)")
-    return 0
+    return 1 if survived else 0
 
 
 if __name__ == "__main__":
