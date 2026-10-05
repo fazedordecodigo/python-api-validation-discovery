@@ -18,6 +18,13 @@ tools:
       - "**/*.py"
     pass_files: true
 
+  - name: pytest-domain
+    argv: [pytest, sample/test_domain.py, sample/test_limits.py, -q, --tb=line]
+    apply: python
+    patterns:
+      - "**/*.py"
+    pass_files: false
+
   # SAST no diff de código Python.
   - name: bandit
     argv: [bandit, -q, -r]
@@ -70,4 +77,19 @@ tools:
       - "**/cloudformation/**"
       - "**/template.yaml"
       - "**/template.yml"
+    pass_files: true
+
+  - name: schemathesis
+    argv: [python3, -m, schemathesis, run]
+    apply: openapi
+    patterns:
+      - "**/*openapi*.yaml"
+      - "**/*openapi*.yml"
+      - "**/*openapi*.json"
+      - "**/*swagger*.yaml"
+      - "**/*swagger*.yml"
+      - "**/*swagger*.json"
+      - "**/openapi.yaml"
+      - "**/openapi.yml"
+      - "**/openapi.json"
     pass_files: true

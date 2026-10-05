@@ -43,3 +43,4 @@ apm run loop
 - [Amostra do loop](docs/agent-loop-sample.md)
 - [Schemathesis](docs/schemathesis.md)
 - [Checklist de produção](docs/production-checklist.md)
+- [Plano de execução da verificação](docs/plano-execucao-verificacao.md)

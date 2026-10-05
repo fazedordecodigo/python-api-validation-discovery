@@ -5,7 +5,7 @@ As duas camadas rodam no mesmo pipeline, contra a API publicada no API Gateway (
 Opções de runner:
 
 - **GitHub Actions:** o repositório do serviço dispara pytest (Schemathesis + pytest-bdd) com a URL do stage e o spec OpenAPI.
-- **AWS CodeBuild:** o mesmo comando, se o padrão da plataforma já é build na AWS. O spec pode vir do artefato do build ou de um bucket.
+- **AWS CodeBuild:** o mesmo comando, se o padrão da plataforma já é build na AWS. O spec pode vir do artefato do build ou de um bucket. O loop do PR é `python3 scripts/agent_loop.py --base <ref da base>`, com o mesmo `loop.yaml`.
 
 O que o pipeline precisa ter:
 
