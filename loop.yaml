@@ -18,6 +18,13 @@ tools:
       - "**/*.py"
     pass_files: true
 
+  - name: pytest-domain
+    argv: [pytest, sample/test_domain.py, sample/test_limits.py, -q, --tb=line]
+    apply: python
+    patterns:
+      - "**/*.py"
+    pass_files: false
+
   # SAST no diff de código Python.
   - name: bandit
     argv: [bandit, -q, -r]

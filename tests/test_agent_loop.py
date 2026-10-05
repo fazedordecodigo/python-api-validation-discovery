@@ -33,7 +33,7 @@ class LoadConfigTests(unittest.TestCase):
         names = [tool.name for tool in config.tools]
         self.assertEqual(
             names,
-            ["ruff", "mypy", "bandit", "gitleaks", "pip-audit", "trivy"],
+            ["ruff", "mypy", "pytest-domain", "bandit", "gitleaks", "pip-audit", "trivy"],
         )
 
     def test_sample_loop_yaml_selects_ruff_mypy_pytest(self) -> None:
@@ -52,7 +52,7 @@ class SelectionTests(unittest.TestCase):
             for tool in self.config.tools
             if agent_loop.tool_applies(tool, changed)
         ]
-        self.assertEqual(selected, ["ruff", "mypy", "bandit", "gitleaks"])
+        self.assertEqual(selected, ["ruff", "mypy", "pytest-domain", "bandit", "gitleaks"])
 
     def test_dependency_change_selects_audit_and_secrets(self) -> None:
         changed = ["requirements.txt"]
