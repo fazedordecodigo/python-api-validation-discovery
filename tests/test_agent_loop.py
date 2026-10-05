@@ -45,6 +45,18 @@ class LoadConfigTests(unittest.TestCase):
             ],
         )
 
+    def test_workflow_installs_each_tool_and_runs_the_loop(self) -> None:
+        config = agent_loop.load_config(ROOT / "loop.yaml")
+        workflow = (ROOT / ".github" / "workflows" / "agent-loop.yml").read_text(
+            encoding="utf-8"
+        )
+        for tool in config.tools:
+            if tool.argv[:2] == ("python3", "-m"):
+                self.assertIn(tool.argv[2], workflow)
+            else:
+                self.assertIn(tool.argv[0], workflow)
+        self.assertIn("python3 scripts/agent_loop.py --base", workflow)
+
     def test_sample_loop_yaml_selects_ruff_mypy_pytest(self) -> None:
         config = agent_loop.load_config(ROOT / "sample" / "loop.yaml")
         self.assertEqual([tool.name for tool in config.tools], ["ruff", "mypy", "pytest-domain"])
